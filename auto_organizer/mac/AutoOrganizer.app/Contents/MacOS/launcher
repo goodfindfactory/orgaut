@@ -1,0 +1,19 @@
+#!/bin/bash
+# Double-click entry for AutoOrganizer.app — opens the Tk GUI.
+set -euo pipefail
+
+HERE=$(cd "$(dirname "$0")" && pwd)
+# .../auto_organizer/mac/AutoOrganizer.app/Contents/MacOS -> auto_organizer
+APP_DIR=$(cd "$HERE/../../../.." && pwd)
+
+if [[ ! -f "$APP_DIR/gui.py" ]]; then
+  APP_DIR=$HOME/orgaut/auto_organizer
+fi
+
+if [[ ! -x "$APP_DIR/venv/bin/python" ]]; then
+  osascript -e 'display dialog "Auto Organizer is not installed yet. Open Terminal and run:\n\n~/orgaut/auto_organizer/mac/install-mac.sh" buttons {"OK"} default button 1' || true
+  exit 1
+fi
+
+cd "$APP_DIR"
+exec "$APP_DIR/venv/bin/python" gui.py

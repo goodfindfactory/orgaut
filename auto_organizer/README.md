@@ -165,6 +165,54 @@ Then GitHub → Releases → Draft new release → attach zip/tar.gz.
 
 GitHub → Settings → Branches → Protect `main` → require PRs + this CI check.
 
+### Install on a MacBook
+
+On the Mac (Terminal). This cloud agent cannot do it for you.
+
+```bash
+xcode-select --install
+# optional: brew install python python-tk
+
+git clone https://github.com/goodfindfactory/orgaut.git ~/orgaut
+bash ~/orgaut/auto_organizer/mac/install-mac.sh
+export PATH="$HOME/.local/bin:$PATH"
+aoctl status
+aoctl dry-run
+```
+
+Double-click **~/Applications/AutoOrganizer.app** (created by the installer). First run uses the Tk GUI.
+
+Optional real `.app` via py2app (Mac only):
+
+```bash
+cd ~/orgaut/auto_organizer
+source venv/bin/activate
+pip install py2app
+python mac/setup-py2app.py py2app
+```
+
+### iPhone control (simple SSH commands)
+
+1. Mac → System Settings → General → Sharing → **Remote Login** on. Note the Mac’s LAN IP (`ipconfig getifaddr en0`).
+2. Prefer an SSH key on the phone/Shortcuts over a password. Do not commit passwords.
+3. iPhone → Shortcuts → **Run Script Over SSH**
+   - Host: Mac IP
+   - User: your Mac username
+   - Script: one of:
+
+```bash
+$HOME/orgaut/auto_organizer/mac/aoctl status
+$HOME/orgaut/auto_organizer/mac/aoctl test
+$HOME/orgaut/auto_organizer/mac/aoctl dry-run
+$HOME/orgaut/auto_organizer/mac/aoctl organize ~/Downloads
+$HOME/orgaut/auto_organizer/mac/aoctl undo ~/Downloads
+$HOME/orgaut/auto_organizer/mac/aoctl report ~/Downloads
+```
+
+Name shortcuts “AO dry-run”, “AO organize”, then add to the Home Screen or Siri. The Mac must be on, unlocked for GUI, and on the same Wi-Fi (or reachable via VPN).
+
+`aoctl` never pushes `git` to `main` and never enables SSH itself.
+
 ### iPhone-triggered build (Mac as optional local server)
 
 This cloud agent is not your MacBook. SSH, `buildbot` user creation, and the
@@ -237,6 +285,9 @@ auto_organizer/
     utils/logger.py
     utils/paths.py
     tests/
+    mac/aoctl
+    mac/install-mac.sh
+    mac/AutoOrganizer.app
     README.md
     requirements.txt
     .gitignore

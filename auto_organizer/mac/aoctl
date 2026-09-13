@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+# Simple Mac + iPhone control commands for Auto Organizer.
+# iPhone Shortcuts → Run Script Over SSH → ~/orgaut/auto_organizer/mac/aoctl <cmd>
+set -euo pipefail
+
+resolve_app() {
+  if [[ -n "${AOCTL_HOME:-}" && -f "${AOCTL_HOME}/cli.py" ]]; then
+    APP_DIR=$AOCTL_HOME
+  elif [[ -f /workspace/auto_organizer/cli.py ]]; then
+    APP_DIR=/workspace/auto_organizer
+  elif [[ -f "$HOME/orgaut/auto_organizer/cli.py" ]]; then
+    APP_DIR=$HOME/orgaut/auto_organizer
+  elif [[ -f "$(cd "$(dirname "$0")/.." && pwd)/cli.py" ]]; then
+    APP_DIR=$(cd "$(dirname "$0")/.." && pwd)
+  else
+    echo "aoctl: cannot find auto_organizer. Clone goodfindfactory/orgaut to ~/orgaut" >&2
+    exit 1
+  fi
+}
+
+ensure_venv() {
+  resolve_app
+  if [[ ! -x "$APP_DIR/venv/bin/python" ]]; then
+    echo "aoctl: no venv. Run: $APP_DIR/mac/install-mac.sh" >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1091
+  source "$APP_DIR/venv/bin/activate"
+  cd "$APP_DIR"
+}
+
+target_path() {
+  echo "${1:-${ORGANIZE_PATH:-$HOME/Downloads}}"
+}
+
+cmd_help() {
+  cat <<'TXT'
+aoctl — Auto Organizer phone/Mac commands
+
+  aoctl help
+  aoctl status
+  aoctl install
+  aoctl test
+  aoctl dry-run [PATH]     default: ~/Downloads
+  aoctl organize [PATH]    real move (use dry-run first)
+  aoctl undo [PATH]
+  aoctl report [PATH]
+  aoctl gui
+  aoctl update             git pull on the clone (ff-only)
+
+iPhone Shortcut script examples (SSH to this Mac):
+
+  ~/orgaut/auto_organizer/mac/aoctl status
+  ~/orgaut/auto_organizer/mac/aoctl dry-run
+  ~/orgaut/auto_organizer/mac/aoctl organize ~/Downloads
+  ~/orgaut/auto_organizer/mac/aoctl undo ~/Downloads
+  ~/orgaut/auto_organizer/mac/aoctl report ~/Downloads
+TXT
+}
+
+cmd_status() {
+  resolve_app
+  echo "app: $APP_DIR"
+  echo "python: $(command -v python3 || true)"
+  if [[ -x "$APP_DIR/venv/bin/python" ]]; then
+    "$APP_DIR/venv/bin/python" -V
+    echo "venv: ok"
+  else
+    echo "venv: missing (run aoctl install)"
+  fi
+  hostname
+}
+
+cmd_install() {
+  resolve_app
+  exec "$APP_DIR/mac/install-mac.sh"
+}
+
+cmd_test() {
+  ensure_venv
+  pytest -q
+}
+
+cmd_dry_run() {
+  ensure_venv
+  local path
+  path=$(target_path "${1:-}")
+  python cli.py --path "$path" --dry-run
+}
+
+cmd_organize() {
+  ensure_venv
+  local path
+  path=$(target_path "${1:-}")
+  python cli.py --path "$path"
+}
+
+cmd_undo() {
+  ensure_venv
+  local path
+  path=$(target_path "${1:-}")
+  python cli.py --path "$path" --undo
+}
+
+cmd_report() {
+  ensure_venv
+  local path
+  path=$(target_path "${1:-}")
+  python cli.py --path "$path" --report
+}
+
+cmd_gui() {
+  ensure_venv
+  python gui.py
+}
+
+cmd_update() {
+  resolve_app
+  local root
+  root=$(cd "$APP_DIR/.." && pwd)
+  git -C "$root" fetch --all
+  git -C "$root" pull --ff-only
+}
+
+main() {
+  local cmd=${1:-help}
+  shift || true
+  case $cmd in
+    help|-h|--help) cmd_help ;;
+    status) cmd_status ;;
+    install) cmd_install ;;
+    test) cmd_test ;;
+    dry-run|dryrun) cmd_dry_run "${1:-}" ;;
+    organize|run) cmd_organize "${1:-}" ;;
+    undo) cmd_undo "${1:-}" ;;
+    report) cmd_report "${1:-}" ;;
+    gui) cmd_gui ;;
+    update) cmd_update ;;
+    *)
+      echo "aoctl: unknown command: $cmd" >&2
+      cmd_help >&2
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"
