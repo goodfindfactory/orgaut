@@ -1,20 +1,70 @@
 #!/usr/bin/env bash
-# Install Auto Organizer on this Mac: venv, aoctl, optional ~/Applications app.
+# Install Auto Organizer on this Mac: copy zip/git tree to ~/orgaut, venv, aoctl, app.
 set -euo pipefail
 
 REPO_URL="${AUTOORG_REPO_URL:-https://github.com/goodfindfactory/orgaut.git}"
-CLONE_DIR="${AUTOORG_CLONE_DIR:-$HOME/orgaut}"
+HOME_INSTALL="${AUTOORG_CLONE_DIR:-$HOME/orgaut}"
 
 if [[ -f "$(cd "$(dirname "$0")/.." && pwd)/cli.py" ]]; then
   APP_DIR=$(cd "$(dirname "$0")/.." && pwd)
   REPO_ROOT=$(cd "$APP_DIR/.." && pwd)
-elif [[ -d "$CLONE_DIR/auto_organizer" ]]; then
-  REPO_ROOT=$CLONE_DIR
-  APP_DIR=$CLONE_DIR/auto_organizer
+elif [[ -d "$HOME_INSTALL/auto_organizer" ]]; then
+  REPO_ROOT=$HOME_INSTALL
+  APP_DIR=$HOME_INSTALL/auto_organizer
 else
-  git clone "$REPO_URL" "$CLONE_DIR"
-  REPO_ROOT=$CLONE_DIR
-  APP_DIR=$CLONE_DIR/auto_organizer
+  git clone "$REPO_URL" "$HOME_INSTALL"
+  REPO_ROOT=$HOME_INSTALL
+  APP_DIR=$HOME_INSTALL/auto_organizer
+fi
+
+copy_tree_to_home() {
+  local src=$1
+  local dest=$2
+  mkdir -p "$dest"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a \
+      --exclude='venv/' \
+      --exclude='.venv/' \
+      --exclude='.git/' \
+      --exclude='__pycache__/' \
+      --exclude='.pytest_cache/' \
+      --exclude='dist/' \
+      "$src/" "$dest/"
+  else
+    tar -C "$src" \
+      --exclude='venv' \
+      --exclude='.venv' \
+      --exclude='.git' \
+      --exclude='__pycache__' \
+      --exclude='.pytest_cache' \
+      --exclude='dist' \
+      -cf - . | tar -C "$dest" -xf -
+  fi
+}
+
+# Zip / Downloads copies land in ~/orgaut so aoctl and the .app keep a stable path.
+should_home_install=0
+if [[ "${AUTOORG_INSTALL_HOME:-}" == 1 ]]; then
+  should_home_install=1
+elif [[ "$(uname -s)" == Darwin && -f "$REPO_ROOT/Install Auto Organizer.command" && "$REPO_ROOT" != "$HOME_INSTALL" ]]; then
+  should_home_install=1
+fi
+
+if [[ "$should_home_install" == 1 && "$REPO_ROOT" != "$HOME_INSTALL" ]]; then
+  echo "Copying Auto Organizer to $HOME_INSTALL"
+  copy_tree_to_home "$REPO_ROOT" "$HOME_INSTALL"
+  REPO_ROOT=$HOME_INSTALL
+  APP_DIR=$HOME_INSTALL/auto_organizer
+fi
+
+if [[ ! -f "$APP_DIR/cli.py" ]]; then
+  echo "install-mac: auto_organizer/cli.py not found under $APP_DIR" >&2
+  exit 1
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "install-mac: python3 is required (Xcode CLT, python.org, or brew install python python-tk)" >&2
+  exit 1
 fi
 
 echo "Installing Auto Organizer from $APP_DIR"
@@ -29,6 +79,8 @@ pytest -q
 
 chmod +x "$APP_DIR/mac/aoctl" \
   "$APP_DIR/mac/install-mac.sh" \
+  "$APP_DIR/mac/package-mac-zip.sh" \
+  "$APP_DIR/mac/Install Auto Organizer.command" \
   "$APP_DIR/mac/AutoOrganizer.app/Contents/MacOS/launcher" \
   "$APP_DIR/pipelines/auto_organizer_build.sh" 2>/dev/null || true
 

@@ -8,6 +8,7 @@ __pycache__/
 build/
 dist/
 auto_organizer_prod.zip
+AutoOrganizer-Mac.zip
 *.egg-info/
 .eggs/
 *.egg

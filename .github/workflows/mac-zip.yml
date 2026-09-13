@@ -1,0 +1,56 @@
+name: Mac zip archive
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "mac-v*"
+      - "v*"
+  pull_request:
+    paths:
+      - "auto_organizer/mac/**"
+      - "auto_organizer/tests/test_mac_zip.py"
+      - ".github/workflows/mac-zip.yml"
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test packager
+        run: pytest -q auto_organizer/tests/test_mac_zip.py
+
+      - name: Build AutoOrganizer-Mac.zip
+        run: bash auto_organizer/mac/package-mac-zip.sh
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoOrganizer-Mac
+          path: dist/AutoOrganizer-Mac.zip
+
+      - name: Attach zip to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/AutoOrganizer-Mac.zip --clobber
+          else
+            gh release create "$tag" dist/AutoOrganizer-Mac.zip \
+              --title "Auto Organizer for Mac ${tag}" \
+              --notes "Download AutoOrganizer-Mac.zip on the MacBook, unzip, then double-click Install Auto Organizer.command."
+          fi

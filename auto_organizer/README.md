@@ -167,7 +167,19 @@ GitHub → Settings → Branches → Protect `main` → require PRs + this CI ch
 
 ### Install on a MacBook
 
-On the Mac (Terminal). This cloud agent cannot do it for you.
+**Zip (no git):** download `AutoOrganizer-Mac.zip` from
+[Releases](https://github.com/goodfindfactory/orgaut/releases) or the
+**Mac zip archive** Actions run. Unzip. Double-click
+`Install Auto Organizer.command`. If Gatekeeper blocks it, right-click → Open.
+
+Rebuild the zip:
+
+```bash
+bash auto_organizer/mac/package-mac-zip.sh
+```
+
+**Or clone on the Mac (Terminal).** This cloud agent cannot copy files onto
+your MacBook; the zip / git clone is the hand-off.
 
 ```bash
 xcode-select --install
@@ -287,6 +299,9 @@ auto_organizer/
     tests/
     mac/aoctl
     mac/install-mac.sh
+    mac/package-mac-zip.sh
+    mac/Install Auto Organizer.command
+    mac/INSTALL-MAC.txt
     mac/AutoOrganizer.app
     README.md
     requirements.txt

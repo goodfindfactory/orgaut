@@ -13,7 +13,7 @@ resolve_app() {
   elif [[ -f "$(cd "$(dirname "$0")/.." && pwd)/cli.py" ]]; then
     APP_DIR=$(cd "$(dirname "$0")/.." && pwd)
   else
-    echo "aoctl: cannot find auto_organizer. Clone goodfindfactory/orgaut to ~/orgaut" >&2
+    echo "aoctl: cannot find auto_organizer. Unzip AutoOrganizer-Mac.zip and run Install Auto Organizer.command, or clone goodfindfactory/orgaut to ~/orgaut" >&2
     exit 1
   fi
 }
@@ -46,7 +46,7 @@ aoctl — Auto Organizer phone/Mac commands
   aoctl undo [PATH]
   aoctl report [PATH]
   aoctl gui
-  aoctl update             git pull on the clone (ff-only)
+  aoctl update             git pull on a clone (ff-only); zip installs re-download
 
 iPhone Shortcut script examples (SSH to this Mac):
 
@@ -118,8 +118,14 @@ cmd_update() {
   resolve_app
   local root
   root=$(cd "$APP_DIR/.." && pwd)
-  git -C "$root" fetch --all
-  git -C "$root" pull --ff-only
+  if git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git -C "$root" fetch --all
+    git -C "$root" pull --ff-only
+    return
+  fi
+  echo "aoctl: this copy was installed from a zip (no git)." >&2
+  echo "Download a new AutoOrganizer-Mac.zip from GitHub Releases and run Install Auto Organizer.command again." >&2
+  exit 1
 }
 
 main() {

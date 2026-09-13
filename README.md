@@ -69,6 +69,23 @@ pytest -q
 
 CI on `main` (push + PR) is the same two commands on Python 3.11.
 
+## MacBook zip
+
+On the Mac, download **AutoOrganizer-Mac.zip** from
+[Releases](https://github.com/goodfindfactory/orgaut/releases)
+(or the **Mac zip archive** Actions artifact). Unzip, then double-click
+**Install Auto Organizer.command**. That copies the tree to `~/orgaut`,
+installs `aoctl`, and puts **AutoOrganizer.app** in `~/Applications`.
+
+Rebuild the zip from this repo:
+
+```bash
+bash auto_organizer/mac/package-mac-zip.sh
+# writes dist/AutoOrganizer-Mac.zip
+```
+
+Details: [`auto_organizer/mac/INSTALL-MAC.txt`](auto_organizer/mac/INSTALL-MAC.txt).
+
 ## Auto Organizer (CLI + GUI)
 
 The full Auto Organizer app lives in [`auto_organizer/`](auto_organizer/README.md):
