@@ -71,9 +71,13 @@ CI on `main` (push + PR) is the same two commands on Python 3.11.
 
 ## Live demo
 
-https://goodfindfactory.github.io/orgaut/
+**Vercel (new `autorg-live` project):** https://autorg-live-slaungageos.vercel.app
 
-Interactive dry-run / organize / undo in the browser. Download **AutoOrganizer-Mac.zip** from that page.
+Type prompts (`dry-run`, `organize`, `undo`, `report`, `where does Vacation.JPG go?`) and watch the yard move. This is a new AutOrg project, not SlanguageOS.
+
+GitHub Pages mirror: https://goodfindfactory.github.io/orgaut/
+
+Download **AutoOrganizer-Mac.zip** from either page.
 
 ## MacBook zip
 
