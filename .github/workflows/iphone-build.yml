@@ -1,0 +1,38 @@
+name: iPhone Auto Organizer Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch or tag to build
+        required: true
+        default: main
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Test
+        run: pytest -q
+
+      - name: App self-check
+        run: |
+          python auto_organizer/cli.py --help
+          python auto_organizer/file_types.py
+          python -c "import json; json.load(open('auto_organizer/config.json')); print('CONFIG OK')"

@@ -1,13 +1,11 @@
-# Byte-compiled / cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Packaging
+.Python
 build/
 dist/
-auto_organizer_prod.zip
 *.egg-info/
 .eggs/
 *.egg
@@ -17,19 +15,19 @@ auto_organizer_prod.zip
 venv/
 env/
 
-# Test / tooling
+# Tests / tooling
 .pytest_cache/
 .coverage
 htmlcov/
-.mypy_cache/
-.ruff_cache/
-.tox/
+
+# Auto Organizer runtime
+_undo/
+summary_report.txt
+auto_organizer_prod.zip
+debug_test_folder/
 
 # Editors / OS
 .idea/
 .vscode/
 *.swp
 .DS_Store
-
-# Auto Organizer runtime
-_undo/

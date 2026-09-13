@@ -69,6 +69,20 @@ pytest -q
 
 CI on `main` (push + PR) is the same two commands on Python 3.11.
 
+## Auto Organizer (CLI + GUI)
+
+The full Auto Organizer app lives in [`auto_organizer/`](auto_organizer/README.md):
+
+```bash
+cd auto_organizer
+pip install -r requirements.txt
+python cli.py --path <target>
+python cli.py --path <target> --dry-run
+python cli.py --undo
+python cli.py --report
+python gui.py
+```
+
 ## License
 
 MIT © 2026 GoodFindFactory
