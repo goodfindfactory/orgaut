@@ -32,5 +32,5 @@ autoorg = "autoorg.main:main"
 packages = ["src/autoorg"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src"]
+testpaths = ["tests", "auto_organizer/tests"]
+pythonpath = ["src", "auto_organizer"]

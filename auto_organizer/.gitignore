@@ -1,10 +1,9 @@
-# Byte-compiled / cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Packaging
+.Python
 build/
 dist/
 *.egg-info/
@@ -16,19 +15,17 @@ dist/
 venv/
 env/
 
-# Test / tooling
+# Tests / tooling
 .pytest_cache/
 .coverage
 htmlcov/
-.mypy_cache/
-.ruff_cache/
-.tox/
+
+# Auto Organizer runtime
+_undo/
+summary_report.txt
 
 # Editors / OS
 .idea/
 .vscode/
 *.swp
 .DS_Store
-
-# Auto Organizer runtime
-_undo/

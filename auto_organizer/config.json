@@ -1,0 +1,13 @@
+{
+  "categories": {
+    "documents": ["pdf", "docx", "txt", "md"],
+    "images": ["jpg", "jpeg", "png", "gif", "bmp"],
+    "videos": ["mp4", "mov", "avi"],
+    "audio": ["mp3", "wav", "flac"],
+    "archives": ["zip", "rar", "7z"],
+    "code": ["py", "js", "ts", "html", "css"],
+    "executables": ["exe", "dmg", "app"]
+  },
+  "undo_folder": "_undo",
+  "report_file": "summary_report.txt"
+}
