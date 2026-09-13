@@ -114,4 +114,7 @@ python gui.py
 
 ## License
 
-MIT © 2026 GoodFindFactory
+Proprietary — All Rights Reserved
+
+ORGAUT is free to download but not open-source licensed.
+
