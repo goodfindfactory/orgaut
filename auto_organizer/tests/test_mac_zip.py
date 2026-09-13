@@ -16,6 +16,17 @@ PACKAGER = ROOT / "auto_organizer" / "mac" / "package-mac-zip.sh"
 NAME = "AutoOrganizer-Mac"
 
 
+def test_demo_page_uses_config_categories() -> None:
+    html = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
+    import json
+
+    config = json.loads((ROOT / "auto_organizer" / "config.json").read_text(encoding="utf-8"))
+    for category, extensions in config["categories"].items():
+        assert f'data-cat="{category}"' in html
+        for ext in extensions:
+            assert ext in html
+
+
 def test_packager_script_exists_and_is_executable() -> None:
     assert PACKAGER.is_file()
     assert os.access(PACKAGER, os.X_OK)
@@ -63,6 +74,7 @@ def test_package_mac_zip_contains_mac_bundle(tmp_path: Path) -> None:
         assert not any("/venv/" in name for name in names)
         assert not any("__pycache__" in name for name in names)
         assert not any(name.endswith("/dist/") or "/dist/" in name for name in names)
+        assert not any(name.endswith("docs/AutoOrganizer-Mac.zip") for name in names)
 
         command_info = zf.getinfo(f"{NAME}/Install Auto Organizer.command")
         mode = stat.S_IMODE(command_info.external_attr >> 16)

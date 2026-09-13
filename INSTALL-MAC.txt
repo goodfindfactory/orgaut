@@ -1,0 +1,44 @@
+Auto Organizer — MacBook zip
+============================
+
+This zip is the whole orgaut tree, ready to open on a Mac.
+
+On the MacBook
+--------------
+1. Download AutoOrganizer-Mac.zip (GitHub → Releases, or the Actions artifact).
+2. Double-click the zip in Finder. You get a folder named AutoOrganizer-Mac.
+3. Optional: drag that folder to ~/orgaut, or leave it in Downloads.
+4. Double-click "Install Auto Organizer.command".
+   If macOS says it cannot be opened, right-click → Open → Open.
+5. Wait for the Terminal window to finish. Python 3.10+ is required
+   (Xcode Command Line Tools, python.org, or Homebrew).
+
+That installs:
+  ~/orgaut/auto_organizer          (app + venv)
+  ~/.local/bin/aoctl               (Terminal / iPhone SSH)
+  ~/Applications/AutoOrganizer.app (double-click GUI)
+
+First use
+---------
+  export PATH="$HOME/.local/bin:$PATH"
+  aoctl status
+  aoctl dry-run
+  aoctl organize ~/Downloads     # real moves — dry-run first
+
+Or open ~/Applications/AutoOrganizer.app (dry-run is on by default).
+
+iPhone
+------
+Mac → System Settings → General → Sharing → Remote Login.
+Shortcuts → Run Script Over SSH → this Mac:
+
+  $HOME/orgaut/auto_organizer/mac/aoctl status
+  $HOME/orgaut/auto_organizer/mac/aoctl dry-run
+  $HOME/orgaut/auto_organizer/mac/aoctl organize ~/Downloads
+
+Do not store the Mac password in this zip or the git repo. Prefer an SSH key.
+
+Rebuild this zip
+----------------
+  bash auto_organizer/mac/package-mac-zip.sh
+  # writes dist/AutoOrganizer-Mac.zip

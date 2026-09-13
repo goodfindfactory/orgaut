@@ -69,11 +69,18 @@ pytest -q
 
 CI on `main` (push + PR) is the same two commands on Python 3.11.
 
+## Live demo
+
+https://goodfindfactory.github.io/orgaut/
+
+Interactive dry-run / organize / undo in the browser. Download **AutoOrganizer-Mac.zip** from that page.
+
 ## MacBook zip
 
-On the Mac, download **AutoOrganizer-Mac.zip** from
-[Releases](https://github.com/goodfindfactory/orgaut/releases)
-(or the **Mac zip archive** Actions artifact). Unzip, then double-click
+On the Mac, download **AutoOrganizer-Mac.zip** from the
+[live demo](https://goodfindfactory.github.io/orgaut/),
+[Releases](https://github.com/goodfindfactory/orgaut/releases),
+or the **Mac zip archive** Actions artifact. Unzip, then double-click
 **Install Auto Organizer.command**. That copies the tree to `~/orgaut`,
 installs `aoctl`, and puts **AutoOrganizer.app** in `~/Applications`.
 

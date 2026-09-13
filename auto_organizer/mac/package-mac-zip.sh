@@ -36,6 +36,7 @@ copy_tree() {
       --exclude='_undo/' \
       --exclude='summary_report.txt' \
       --exclude='AutoOrganizer-Mac.zip' \
+      --exclude='docs/AutoOrganizer-Mac.zip' \
       --exclude='auto_organizer_prod.zip' \
       "$src/" "$dest/"
   else
@@ -49,6 +50,8 @@ copy_tree() {
       --exclude='build' \
       --exclude='.DS_Store' \
       --exclude='_undo' \
+      --exclude='AutoOrganizer-Mac.zip' \
+      --exclude='docs/AutoOrganizer-Mac.zip' \
       -cf - . | tar -C "$dest" -xf -
   fi
 }

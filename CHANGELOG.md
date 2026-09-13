@@ -4,6 +4,7 @@ All notable changes to autoorg live here.
 
 ## Unreleased
 
+- Live demo: https://goodfindfactory.github.io/orgaut/
 - Mac zip: `bash auto_organizer/mac/package-mac-zip.sh` writes `dist/AutoOrganizer-Mac.zip`
 - Finder installer: `Install Auto Organizer.command` copies the zip tree to `~/orgaut`
 - GitHub Actions **Mac zip archive** uploads the zip and attaches it to `v*` / `mac-v*` releases
