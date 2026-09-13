@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import sys
-import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, messagebox, ttk
 
 from main import organize
 from utils.logger import error
+
+try:
+    import tkinter as tk
+    from tkinter import filedialog, messagebox, ttk
+except ImportError:  # headless / minimal Python builds
+    tk = None  # type: ignore[assignment]
+    filedialog = messagebox = ttk = None  # type: ignore[assignment]
 
 
 def run_organizer(path: str, dry_run: bool, status: tk.StringVar) -> None:
@@ -64,6 +69,10 @@ def build_window() -> tk.Tk:
 
 
 def main() -> int:
+    if tk is None:
+        error("Tkinter is not installed on this Python.")
+        print("Tkinter GUI unavailable. Use: python cli.py --path <target>", file=sys.stderr)
+        return 1
     try:
         window = build_window()
     except tk.TclError as exc:

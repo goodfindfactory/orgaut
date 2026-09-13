@@ -96,7 +96,90 @@ Tkinter is missing; use the CLI instead.
 pytest -q
 ```
 
-From the repo root, CI also runs the package tests plus these.
+From this folder, or from the repo root (CI runs both suites).
+
+## Full ops (local + GitHub + CI + release)
+
+This tree already lives in **goodfindfactory/orgaut**. Do not `git init` here — the repo is live. Use these commands from `auto_organizer/`.
+
+### Local setup
+
+```bash
+cd auto_organizer
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Local run (CLI)
+
+```bash
+python cli.py --path <TARGET_DIRECTORY>
+python cli.py --undo
+python cli.py --report
+```
+
+Preview first with `python cli.py --path <TARGET_DIRECTORY> --dry-run`.
+
+### Local run (GUI)
+
+```bash
+python gui.py
+```
+
+### Local tests
+
+```bash
+pytest -q
+```
+
+### Git / GitHub (this repo)
+
+Remote is already `https://github.com/goodfindfactory/orgaut.git`. Feature work goes on a branch and a PR into `main` — do not re-init or force-push `main`.
+
+```bash
+git remote -v
+git pull origin main
+```
+
+### CI
+
+Repo-root `.github/workflows/ci.yml` is **Auto Organizer CI**:
+
+- push + PR to `main`
+- Python 3.11
+- `pip install -r requirements.txt`
+- `pytest -q`
+- `flake8 auto_organizer` (E9, F63, F7, F82)
+
+### Optional: tag and release (after `main` is good)
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Then GitHub → Releases → Draft new release → attach zip/tar.gz.
+
+### Optional: branch protection
+
+GitHub → Settings → Branches → Protect `main` → require PRs + this CI check.
+
+### Optional: publish as a standalone `auto_organizer` repo
+
+If you create an empty GitHub repo named `auto_organizer` (no README) and want this folder as the root:
+
+```bash
+# from a clean copy of this directory only
+git init
+git add .
+git commit -m "Initial commit: Auto Organizer full build"
+git remote add origin https://github.com/<YOUR_USERNAME>/auto_organizer.git
+git branch -M main
+git push -u origin main
+```
+
+Copy `.github/workflows/ci.yml` to that new repo root and change the flake8 path to `.` (there will be no nested `auto_organizer/` folder).
 
 ## Layout
 
