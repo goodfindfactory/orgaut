@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>autorg — live demo</title>
+  <meta name="description" content="Prompt Auto Organizer: dry-run, organize, undo, report. Live demo on Vercel.">
+  <style>
+    :root {
+      --bg: #0f1110;
+      --panel: #171a16;
+      --ink: #eef0e6;
+      --muted: #9aa190;
+      --line: #2a2e26;
+      --accent: #c6d36a;
+      --warn: #e0b56a;
+      --skip: #8b93a0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px; }
+    h1 { font-size: 1.55rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+    .lede { color: var(--muted); margin: 0 0 18px; }
+    a { color: var(--accent); }
+    .prompt-box {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .prompt-row { display: flex; gap: 8px; }
+    #prompt {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: #10130f;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 12px 12px;
+      font: 15px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    button, .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #10130f;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button.go, .btn.primary { background: var(--accent); color: #14170f; border-color: var(--accent); font-weight: 650; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chips button { font-size: .88rem; color: var(--muted); }
+    .log {
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: #0c0e0b;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 132px;
+      max-height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      margin: 0 0 16px;
+      color: #d5d8cc;
+    }
+    .log .ok { color: var(--accent); }
+    .log .warn { color: var(--warn); }
+    .log .dim { color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+    }
+    .bucket, .loose {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 118px;
+    }
+    .loose { border-style: dashed; }
+    h2 {
+      font-size: .78rem;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+    }
+    .file {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px;
+      margin: 5px 0;
+      border-radius: 8px;
+      background: #10130f;
+      font: 13px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .file span { color: var(--muted); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .note { color: var(--muted); font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>autorg</h1>
+    <p class="lede">Live Auto Organizer on Vercel. Type a prompt. Watch dry-run, organize, undo, and report — same rules as the Mac app. This page does not touch your disk.</p>
+
+    <div class="prompt-box">
+      <div class="prompt-row">
+        <input id="prompt" autofocus placeholder='Try: dry-run Downloads   or   where does Vacation.JPG go?'>
+        <button class="go" id="run" type="button">Run</button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <pre class="log" id="log"></pre>
+
+    <div class="actions">
+      <a class="btn" href="https://github.com/goodfindfactory/orgaut">GitHub</a>
+      <button type="button" data-prompt="help">Help</button>
+      <button type="button" data-prompt="reset">Reset yard</button>
+    </div>
+
+    <div class="grid">
+      <section class="loose">
+        <h2>Messy folder</h2>
+        <div id="loose"></div>
+      </section>
+      <section class="bucket" data-cat="documents"><h2>documents</h2><div></div></section>
+      <section class="bucket" data-cat="images"><h2>images</h2><div></div></section>
+      <section class="bucket" data-cat="videos"><h2>videos</h2><div></div></section>
+      <section class="bucket" data-cat="audio"><h2>audio</h2><div></div></section>
+      <section class="bucket" data-cat="archives"><h2>archives</h2><div></div></section>
+      <section class="bucket" data-cat="code"><h2>code</h2><div></div></section>
+      <section class="bucket" data-cat="executables"><h2>executables</h2><div></div></section>
+    </div>
+
+    <p class="note">MacBook: unzip <code>AutoOrganizer-Mac.zip</code>, double-click <code>Install Auto Organizer.command</code>. Unknown types stay put. Moves are simulated here.</p>
+  </main>
+  <script>
+    const CATEGORIES = {
+      documents: ["pdf", "docx", "txt", "md"],
+      images: ["jpg", "jpeg", "png", "gif", "bmp"],
+      videos: ["mp4", "mov", "avi"],
+      audio: ["mp3", "wav", "flac"],
+      archives: ["zip", "rar", "7z"],
+      code: ["py", "js", "ts", "html", "css"],
+      executables: ["exe", "dmg", "app"],
+    };
+    const MAP = {};
+    Object.entries(CATEGORIES).forEach(([cat, exts]) => {
+      exts.forEach((ext) => { MAP[ext] = cat; });
+    });
+    const SEED = [
+      "Vacation.JPG", "notes.pdf", "demo.mov", "theme.mp3",
+      "backup.zip", "app.ts", "Setup.dmg", "LICENSE", "weird.xyz",
+    ];
+    const CHIPS = [
+      "status",
+      "dry-run Downloads",
+      "organize Downloads",
+      "undo",
+      "report",
+      "where does Vacation.JPG go?",
+      "add invoice.pdf",
+      "help",
+    ];
+
+    let loose = [];
+    let placed = [];
+    let lastBatch = [];
+    let nextId = 1;
+
+    function extOf(name) {
+      const i = name.lastIndexOf(".");
+      if (i <= 0 || i === name.length - 1) return "";
+      return name.slice(i + 1).toLowerCase();
+    }
+    function categoryFor(name) {
+      return MAP[extOf(name)] || null;
+    }
+    function uniqueName(cat, filename) {
+      const taken = new Set(placed.filter((f) => f.category === cat).map((f) => f.name));
+      if (!taken.has(filename)) return filename;
+      const dot = filename.lastIndexOf(".");
+      const stem = dot === -1 ? filename : filename.slice(0, dot);
+      const suffix = dot === -1 ? "" : filename.slice(dot);
+      let n = 1;
+      while (taken.has(stem + "_" + n + suffix)) n += 1;
+      return stem + "_" + n + suffix;
+    }
+    function renderFile(file, extra) {
+      return '<div class="file">' + file.name + "<span>" + extra + "</span></div>";
+    }
+    function render(preview) {
+      document.getElementById("loose").innerHTML = loose.map((f) => {
+        if (!preview) return renderFile(f, "loose");
+        const cat = categoryFor(f.name);
+        return renderFile(f, cat ? "→ " + cat + "/" : "unknown — stays");
+      }).join("") || "<p class='lede'>Empty.</p>";
+      document.querySelectorAll(".bucket").forEach((el) => {
+        const cat = el.dataset.cat;
+        const items = placed.filter((f) => f.category === cat);
+        el.querySelector("div").innerHTML = items.map((f) => renderFile(f, cat)).join("");
+      });
+    }
+    function log(lines) {
+      const box = document.getElementById("log");
+      const html = (Array.isArray(lines) ? lines : [lines]).map((line) => {
+        if (line.startsWith("INFO")) return '<span class="ok">' + line + "</span>";
+        if (line.startsWith("WARN") || line.startsWith("SKIP")) return '<span class="warn">' + line + "</span>";
+        if (line.startsWith("$") || line.startsWith("  ")) return '<span class="dim">' + line + "</span>";
+        return line;
+      }).join("\n");
+      box.innerHTML = html;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function resetYard() {
+      loose = SEED.map((name, i) => ({ id: i + 1, name }));
+      nextId = SEED.length + 1;
+      placed = [];
+      lastBatch = [];
+      render(false);
+    }
+
+    function cmdHelp() {
+      log([
+        "autorg prompts — same verbs as aoctl",
+        "",
+        "  status",
+        "  dry-run [PATH]          preview, no moves",
+        "  organize [PATH]         move matching files",
+        "  undo",
+        "  report",
+        "  add FILE                drop a file in the messy folder",
+        "  where does FILE go?",
+        "  categories",
+        "  reset",
+        "",
+        "Unknown extensions stay put. Collisions become name_1.ext.",
+      ]);
+    }
+    function cmdStatus() {
+      log([
+        "INFO  app: autorg live demo",
+        "INFO  venv: simulated (browser)",
+        "INFO  loose: " + loose.length + "   organized: " + placed.length,
+        "INFO  last batch: " + lastBatch.length + " file(s)",
+        "INFO  hostname: vercel",
+      ]);
+    }
+    function cmdDryRun() {
+      const planned = [];
+      const skipped = [];
+      loose.forEach((f) => {
+        const cat = categoryFor(f.name);
+        if (cat) planned.push(f.name + " → " + cat + "/" + f.name);
+        else skipped.push(f.name);
+      });
+      render(true);
+      const lines = ["INFO  dry-run ~/Downloads", "INFO  would move " + planned.length + " file(s)"];
+      planned.forEach((p) => lines.push("  " + p));
+      skipped.forEach((n) => lines.push("WARN  skipped (unknown type): " + n));
+      lines.push("INFO  nothing moved");
+      log(lines);
+    }
+    function cmdOrganize() {
+      lastBatch = [];
+      const stay = [];
+      const lines = ["INFO  organize ~/Downloads"];
+      loose.forEach((file) => {
+        const category = categoryFor(file.name);
+        if (!category) {
+          stay.push(file);
+          lines.push("WARN  skipped (unknown type): " + file.name);
+          return;
+        }
+        const dest = uniqueName(category, file.name);
+        const moved = { ...file, name: dest, category, from: file.name };
+        placed.push(moved);
+        lastBatch.push(moved);
+        lines.push("INFO  moved " + file.name + " → " + category + "/" + dest);
+      });
+      loose = stay;
+      render(false);
+      lines.push("INFO  moved " + lastBatch.length + " file(s)");
+      log(lines);
+    }
+    function cmdUndo() {
+      if (!lastBatch.length) {
+        log(["WARN  nothing to undo"]);
+        return;
+      }
+      const n = lastBatch.length;
+      lastBatch.forEach((file) => {
+        placed = placed.filter((f) => f.id !== file.id);
+        loose.push({ id: file.id, name: file.from || file.name });
+      });
+      lastBatch = [];
+      render(false);
+      log(["INFO  undo restored " + n + " file(s)"]);
+    }
+    function cmdReport() {
+      const counts = {};
+      placed.forEach((f) => { counts[f.category] = (counts[f.category] || 0) + 1; });
+      const lines = [
+        "Auto Organizer summary",
+        "target: ~/Downloads",
+        "action: organize",
+        "dry_run: false",
+        "count: " + placed.length,
+        "",
+      ];
+      if (placed.length) {
+        lines.push("by category:");
+        Object.keys(counts).sort().forEach((c) => lines.push("  " + c + ": " + counts[c]));
+        lines.push("");
+        placed.forEach((f) => lines.push("Moved: " + (f.from || f.name) + " → " + f.category + "/" + f.name));
+      } else {
+        lines.push("Nothing to do. Run organize first.");
+      }
+      log(lines);
+    }
+    function cmdAdd(name) {
+      if (!name) {
+        log(["WARN  add needs a filename   e.g. add invoice.pdf"]);
+        return;
+      }
+      loose.push({ id: nextId++, name });
+      render(false);
+      const cat = categoryFor(name);
+      log(["INFO  added " + name, cat ? "INFO  would land in " + cat + "/" : "WARN  unknown type — stays loose"]);
+    }
+    function cmdWhere(name) {
+      if (!name) {
+        log(["WARN  ask: where does photo.jpg go?"]);
+        return;
+      }
+      const cat = categoryFor(name);
+      log(cat
+        ? ["INFO  " + name + " → " + cat + "/" + name]
+        : ["WARN  " + name + " is unknown — stays in the messy folder"]);
+    }
+    function cmdCategories() {
+      const lines = ["INFO  config.json categories"];
+      Object.entries(CATEGORIES).forEach(([cat, exts]) => {
+        lines.push("  " + cat + ": " + exts.join(", "));
+      });
+      log(lines);
+    }
+
+    function handle(raw) {
+      const text = (raw || "").trim();
+      if (!text) return;
+      const q = text.replace(/^aoctl\s+/i, "").replace(/^autorg\s+/i, "").trim();
+      const lower = q.toLowerCase();
+      log(["$ " + text, ""]);
+
+      if (/^(help|-h|--help|\?)$/.test(lower)) return cmdHelp();
+      if (/^status$/.test(lower)) return cmdStatus();
+      if (/^(reset|start over|clear)$/.test(lower)) {
+        resetYard();
+        log(["INFO  yard reset to the starter messy folder"]);
+        return;
+      }
+      if (/^(categories|config|rules)$/.test(lower)) return cmdCategories();
+      if (/^(undo|put (them|it) back|restore)$/.test(lower)) return cmdUndo();
+      if (/^(report|summary)$/.test(lower)) return cmdReport();
+      if (/^(dry-?run|preview|what would happen)/.test(lower)) return cmdDryRun();
+      if (/^(organize|sort|run|move)\b/.test(lower)) return cmdOrganize();
+
+      const add = q.match(/^add\s+(.+)$/i) || q.match(/^drop\s+(.+)$/i);
+      if (add) return cmdAdd(add[1].replace(/^["']|["']$/g, ""));
+
+      const where = q.match(/^where does (.+?) go\??$/i) || q.match(/^where(?:'s| is) (.+)\??$/i);
+      if (where) return cmdWhere(where[1].replace(/^["']|["']$/g, ""));
+
+      if (/\.\w{1,8}$/.test(q) && !q.includes(" ")) return cmdWhere(q);
+
+      log([
+        "WARN  unknown prompt: " + text,
+        "INFO  try: dry-run   organize   undo   report   add invoice.pdf   help",
+      ]);
+    }
+
+    document.getElementById("chips").innerHTML = CHIPS.map((c) =>
+      "<button type='button' data-prompt=\"" + c.replace(/"/g, "&quot;") + "\">" + c + "</button>"
+    ).join("");
+    document.getElementById("run").onclick = () => {
+      handle(document.getElementById("prompt").value);
+    };
+    document.getElementById("prompt").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handle(document.getElementById("prompt").value);
+    });
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-prompt]");
+      if (!btn) return;
+      document.getElementById("prompt").value = btn.dataset.prompt;
+      handle(btn.dataset.prompt);
+    });
+
+    resetYard();
+    log([
+      "INFO  autorg ready on Vercel",
+      "INFO  type a prompt or tap a chip",
+      "  dry-run Downloads",
+      "  organize Downloads",
+      "  undo",
+    ]);
+  </script>
+</body>
+</html>

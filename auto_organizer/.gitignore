@@ -1,15 +1,11 @@
-# Byte-compiled / cache
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Packaging
+.Python
 build/
 dist/
-auto_organizer_prod.zip
-AutoOrganizer-Mac.zip
-!docs/AutoOrganizer-Mac.zip
 *.egg-info/
 .eggs/
 *.egg
@@ -19,19 +15,20 @@ AutoOrganizer-Mac.zip
 venv/
 env/
 
-# Test / tooling
+# Tests / tooling
 .pytest_cache/
 .coverage
 htmlcov/
-.mypy_cache/
-.ruff_cache/
-.tox/
+
+# Auto Organizer runtime
+_undo/
+summary_report.txt
+auto_organizer_prod.zip
+AutoOrganizer-Mac.zip
+debug_test_folder/
 
 # Editors / OS
 .idea/
 .vscode/
 *.swp
 .DS_Store
-
-# Auto Organizer runtime
-_undo/

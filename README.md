@@ -69,6 +69,52 @@ pytest -q
 
 CI on `main` (push + PR) is the same two commands on Python 3.11.
 
+## Live demo
+
+**Vercel (GitHub-linked `orgaut`):** https://orgaut.vercel.app  
+**Vercel (GitHub-linked `autorg-app`):** https://autorg-app.vercel.app
+
+Type prompts (`dry-run`, `organize`, `undo`, `report`, `where does Vacation.JPG go?`) and watch the yard move. This is AutOrg, not SlanguageOS. Pushes to this repo deploy through the Vercel GitHub app.
+
+GitHub Pages mirror: https://goodfindfactory.github.io/orgaut/
+
+Download **AutoOrganizer-Mac.zip** from either page.
+
+## MacBook zip
+
+On the Mac, download **AutoOrganizer-Mac.zip** from the
+[live demo](https://goodfindfactory.github.io/orgaut/),
+[Releases](https://github.com/goodfindfactory/orgaut/releases),
+or the **Mac zip archive** Actions artifact. Unzip, then double-click
+**Install Auto Organizer.command**. That copies the tree to `~/orgaut`,
+installs `aoctl`, and puts **AutoOrganizer.app** in `~/Applications`.
+
+Rebuild the zip from this repo:
+
+```bash
+bash auto_organizer/mac/package-mac-zip.sh
+# writes dist/AutoOrganizer-Mac.zip
+```
+
+Details: [`auto_organizer/mac/INSTALL-MAC.txt`](auto_organizer/mac/INSTALL-MAC.txt).
+
+## Auto Organizer (CLI + GUI)
+
+The full Auto Organizer app lives in [`auto_organizer/`](auto_organizer/README.md):
+
+```bash
+cd auto_organizer
+pip install -r requirements.txt
+python cli.py --path <target>
+python cli.py --path <target> --dry-run
+python cli.py --undo
+python cli.py --report
+python gui.py
+```
+
 ## License
 
-MIT © 2026 GoodFindFactory
+Proprietary — All Rights Reserved
+
+ORGAUT is free to download but not open-source licensed.
+
