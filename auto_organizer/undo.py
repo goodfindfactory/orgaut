@@ -81,3 +81,7 @@ def restore_all(target: Path, undo_name: str | None = None) -> list[MoveRecord]:
     path = manifest_path(target, undo_name)
     path.write_text(json.dumps(leftover, indent=2) + "\n", encoding="utf-8")
     return restored
+
+
+if __name__ == "__main__":
+    print("undo OK", MANIFEST_NAME)

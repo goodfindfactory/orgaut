@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 from file_types import category_for, load_config
@@ -9,7 +10,7 @@ from folder_manager import ensure_all_category_folders
 from mover import MoveBatch, MoveRecord, organize_files
 from report import read_report, write_report
 from undo import restore_all, save_batch
-from utils.logger import info, warn
+from utils.logger import enable_debug, info, warn
 from utils.paths import is_reserved_name, resolve_dir
 
 
@@ -89,3 +90,59 @@ def report(path: str | Path) -> str:
     if not text:
         warn("no report yet — run an organize first")
     return text
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="main.py",
+        description="Auto Organizer orchestrator. Default is --dry-run when run as a script.",
+    )
+    parser.add_argument("--path", default=".", help="target directory")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="plan only (default when no --apply)",
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="actually move files (required for a real run from main.py)",
+    )
+    parser.add_argument("--undo", action="store_true")
+    parser.add_argument("--report", action="store_true")
+    parser.add_argument("--debug", action="store_true")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Script entry. Defaults to dry-run so `python main.py` cannot trash the app tree."""
+    args = build_parser().parse_args(argv)
+    if args.debug:
+        enable_debug()
+        info("debug on")
+    target = Path(args.path)
+    try:
+        if args.undo:
+            restored = undo(target)
+            info(f"undo restored {len(restored)} file(s)")
+            return 0
+        if args.report:
+            text = report(target)
+            if text:
+                print(text, end="" if text.endswith("\n") else "\n")
+            return 0
+        dry_run = True if not args.apply else args.dry_run
+        if args.apply and args.dry_run:
+            dry_run = True
+        batch = organize(target, dry_run=dry_run)
+        info(f"{'would move' if dry_run else 'moved'} {len(batch.records)} file(s)")
+        return 0
+    except (FileNotFoundError, NotADirectoryError, ValueError) as exc:
+        from utils.logger import error
+
+        error(str(exc))
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

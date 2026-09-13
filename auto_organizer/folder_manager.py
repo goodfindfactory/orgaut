@@ -40,6 +40,11 @@ def ensure_all_category_folders(
     return folders
 
 
+def ensure_folder(path: str | Path) -> Path:
+    """Master-block alias: create any directory path safely."""
+    return ensure_directory(path)
+
+
 def ensure_undo_folder(target: str | Path, undo_name: str | None = None) -> Path:
     """Create the undo folder under *target*."""
     if undo_name is None:
@@ -50,3 +55,7 @@ def ensure_undo_folder(target: str | Path, undo_name: str | None = None) -> Path
         warn(f"undo path is not a directory: {folder}")
         raise NotADirectoryError(f"undo path is a file: {folder}")
     return ensure_directory(folder)
+
+
+if __name__ == "__main__":
+    print("folder_manager OK", known_categories())

@@ -35,6 +35,11 @@ def get_logger() -> logging.Logger:
     return logger
 
 
+def enable_debug() -> None:
+    """Turn the shared logger up to DEBUG (``--debug`` / master-block)."""
+    get_logger().setLevel(logging.DEBUG)
+
+
 def info(message: str) -> None:
     get_logger().info(_color("INFO", message, "cyan"))
 
@@ -45,6 +50,15 @@ def warn(message: str) -> None:
 
 def error(message: str) -> None:
     get_logger().error(_color("ERROR", message, "red"))
+
+
+def debug(message: str) -> None:
+    get_logger().debug(message)
+
+
+def log(message: str) -> None:
+    """Master-block alias for :func:`info`."""
+    info(message)
 
 
 def _color(level: str, message: str, style: str) -> str:

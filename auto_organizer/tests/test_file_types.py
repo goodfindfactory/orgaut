@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 from file_types import (  # noqa: E402
     build_extension_map,
     category_for,
+    detect_type,
     extension_of,
     known_categories,
     load_config,
@@ -57,7 +58,7 @@ def test_category_for_known_and_unknown() -> None:
     assert category_for("song.flac", cats) == "audio"
     assert category_for("pack.7z", cats) == "archives"
     assert category_for("app.ts", cats) == "code"
-    assert category_for("Setup.exe", cats) == "executables"
+    assert detect_type("Setup.exe", cats) == category_for("Setup.exe", cats) == "executables"
     assert category_for("weird.xyz", cats) is None
     assert category_for("noext", cats) is None
 

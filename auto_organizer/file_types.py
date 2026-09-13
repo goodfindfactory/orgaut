@@ -37,6 +37,11 @@ def build_extension_map(categories: dict[str, list[str]]) -> dict[str, str]:
     return mapping
 
 
+def detect_type(path: str | Path, categories: dict[str, list[str]] | None = None) -> str | None:
+    """Master-block alias for :func:`category_for`."""
+    return category_for(path, categories)
+
+
 def category_for(path: str | Path, categories: dict[str, list[str]] | None = None) -> str | None:
     """Return the category name for *path*, or None if unknown."""
     if categories is None:
@@ -52,3 +57,9 @@ def known_categories(categories: dict[str, list[str]] | None = None) -> list[str
     if categories is None:
         categories = load_config()["categories"]
     return list(categories.keys())
+
+
+if __name__ == "__main__":
+    cfg = load_config()
+    print("file_types OK", list(cfg["categories"]))
+    print("detect_type example.pdf ->", detect_type("example.pdf"))

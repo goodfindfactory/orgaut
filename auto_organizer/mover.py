@@ -64,6 +64,11 @@ def move_file(src: Path, dest: Path, *, dry_run: bool = False) -> MoveRecord:
     return record
 
 
+def safe_move(src: Path | str, dest: Path | str, *, dry_run: bool = False) -> MoveRecord:
+    """Master-block alias for :func:`move_file`."""
+    return move_file(Path(src), Path(dest), dry_run=dry_run)
+
+
 def organize_files(
     target: Path,
     items: list[tuple[Path, str]],
@@ -87,3 +92,7 @@ def organize_files(
             batch.rollback()
         raise
     return batch
+
+
+if __name__ == "__main__":
+    print("mover OK", MoveRecord, safe_move)

@@ -56,3 +56,7 @@ def read_report(target: Path, name: str | None = None) -> str:
     if not path.exists():
         return ""
     return path.read_text(encoding="utf-8")
+
+
+if __name__ == "__main__":
+    print("report OK", load_config()["report_file"])

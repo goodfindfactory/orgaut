@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from main import organize, report, undo
-from utils.logger import error, info
+from utils.logger import enable_debug, error, info
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,11 +38,19 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print the last summary_report.txt under --path",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="verbose logger output",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.debug:
+        enable_debug()
+        info("debug on")
     target = Path(args.path)
 
     exclusive = [args.undo, args.report]
