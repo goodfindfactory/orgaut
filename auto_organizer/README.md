@@ -215,9 +215,9 @@ Name shortcuts “AO dry-run”, “AO organize”, then add to the Home Screen 
 
 ### iPhone-triggered build (Mac as optional local server)
 
-This cloud agent is not your MacBook. SSH, `buildbot` user creation, and the
-iPhone Shortcut have to be done on the Mac and the phone. The repo already has
-a safer phone trigger that does **not** need SSH or a password in Shortcuts.
+This cloud agent is not your MacBook. Remote Login and Shortcuts are set up
+on the Mac and the phone. The repo already has a safer phone trigger that does
+**not** need SSH or a password in Shortcuts.
 
 **Preferred — GitHub Actions from the iPhone**
 
@@ -250,8 +250,8 @@ The script pulls, makes a fresh venv, installs, and tests. It does **not**
 `git add .` / push `main`, and it does **not** organize `Downloads` unless you
 set `ORGANIZE_PATH` (add `ORGANIZE_APPLY=1` only when you really want moves).
 
-A dedicated `buildbot` user is optional and is a Mac admin task, not something
-this repo can do from Linux CI.
+A separate Mac login for SSH is optional and is a local admin task, not
+something this repo can do from Linux CI. Do not store that password here.
 
 ### Optional: publish as a standalone `auto_organizer` repo
 

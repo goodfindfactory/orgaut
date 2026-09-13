@@ -71,7 +71,7 @@ CI on `main` (push + PR) is the same two commands on Python 3.11.
 
 ## Auto Organizer (CLI + GUI)
 
-The full Kevin spec app lives in [`auto_organizer/`](auto_organizer/README.md):
+The full Auto Organizer app lives in [`auto_organizer/`](auto_organizer/README.md):
 
 ```bash
 cd auto_organizer
