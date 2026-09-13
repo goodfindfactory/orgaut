@@ -71,9 +71,10 @@ CI on `main` (push + PR) is the same two commands on Python 3.11.
 
 ## Live demo
 
-**Vercel (new `autorg-live` project):** https://autorg-live-slaungageos.vercel.app
+**Vercel (GitHub-linked `orgaut`):** https://orgaut-slaungageos.vercel.app  
+**Vercel preview project (`autorg-live`):** https://autorg-live-slaungageos.vercel.app
 
-Type prompts (`dry-run`, `organize`, `undo`, `report`, `where does Vacation.JPG go?`) and watch the yard move. This is a new AutOrg project, not SlanguageOS.
+Type prompts (`dry-run`, `organize`, `undo`, `report`, `where does Vacation.JPG go?`) and watch the yard move. This is AutOrg, not SlanguageOS. Pushes to this repo deploy through the Vercel GitHub app.
 
 GitHub Pages mirror: https://goodfindfactory.github.io/orgaut/
 
