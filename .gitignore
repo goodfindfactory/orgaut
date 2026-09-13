@@ -7,6 +7,7 @@ __pycache__/
 # Packaging
 build/
 dist/
+auto_organizer_prod.zip
 *.egg-info/
 .eggs/
 *.egg

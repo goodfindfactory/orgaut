@@ -23,6 +23,7 @@ htmlcov/
 # Auto Organizer runtime
 _undo/
 summary_report.txt
+auto_organizer_prod.zip
 
 # Editors / OS
 .idea/
